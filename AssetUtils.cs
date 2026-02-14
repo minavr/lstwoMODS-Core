@@ -12,15 +12,16 @@ public class AssetUtils
 {
     public List<UnitySpecificAssetBundle> AssetBundles = new();
     
-    public AssetBundle LoadCompatibleAssetBundle()
+    public AssetBundle LoadCompatibleAssetBundle(Assembly callingAssembly = null)
     {
         AssetBundles = AssetBundles.OrderBy(b => b.Version).ToList();
         var currentVersion = new UnityVersion(Application.unityVersion);
 
         var compatibleBundles = from assetBundle in AssetBundles where assetBundle.CheckCompatible(currentVersion) select assetBundle;
         var compatibleBundle = compatibleBundles.FirstOrDefault();
-        var bundle = compatibleBundle?.Load(new StackTrace().GetFrame(1).GetMethod().GetType().Assembly);
-            
+        var assembly = callingAssembly ?? Assembly.GetCallingAssembly();
+        var bundle = compatibleBundle?.Load(assembly);
+
         return bundle;
     }
 }

@@ -66,7 +66,7 @@ namespace lstwoMODS_Core
                 new("lstwoMODS_Core.Resources.assets.5.2.5.bundle", new("5.2.5")),
             };
             
-            AssetBundle = AssetUtils.LoadCompatibleAssetBundle();
+            AssetBundle = AssetUtils.LoadCompatibleAssetBundle(typeof(Plugin).Assembly);
             KeybindManager = gameObject.AddComponent<KeybindManager>();
 
             HacksUIHelper.LoadConfig();
