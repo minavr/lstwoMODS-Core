@@ -596,7 +596,10 @@ namespace lstwoMODS_Core
             dropdown.image.sprite = RoundedRect;
             //dropdown.captionText.font = Font;
             //dropdown.itemText.font = Font;
-            UIFactory.SetLayoutElement(obj, 25, 25, 9999);
+            // preferredWidth so the selected-value field is wide enough to read option text;
+            // without it the dropdown collapses toward minWidth in a vertical layout and only
+            // the first few characters of long names (pets, clothing, etc.) are visible.
+            UIFactory.SetLayoutElement(obj, 200, 25, 9999, preferredWidth: 460);
 
             var keybinder = dropdown.gameObject.AddComponent<DropdownKeybinder>();
             keybinder.dropdown = dropdown;
