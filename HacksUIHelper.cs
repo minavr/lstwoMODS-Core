@@ -592,14 +592,20 @@ namespace lstwoMODS_Core
 
         public Dropdown CreateDropdown(string name, Action<int> onValueChanged, string defaultItemText = "", int itemFontSize = 16, string[] defaultOptions = null)
         {
-            var obj = UIFactory.CreateDropdown(root, name, out var dropdown, defaultItemText, itemFontSize, onValueChanged, defaultOptions);
+            // Wrap the dropdown in a horizontal group whose childControlWidth=true, so its
+            // LayoutElement width is actually honored. The hacks panel itself uses
+            // childControlWidth=false (it doesn't size children by their LayoutElement), which is
+            // why a bare dropdown collapsed toward minWidth and truncated long option names
+            // (pets, clothing, emotes, locations...). This mirrors how CreateButton sizes itself.
+            var group = UIFactory.CreateHorizontalGroup(root, name + "_Group", true, true, true, true);
+            UnityEngine.Object.Destroy(group.GetComponent<Image>());
+            UIFactory.SetLayoutElement(group);
+
+            var obj = UIFactory.CreateDropdown(group, name, out var dropdown, defaultItemText, itemFontSize, onValueChanged, defaultOptions);
             dropdown.image.sprite = RoundedRect;
             //dropdown.captionText.font = Font;
             //dropdown.itemText.font = Font;
-            // preferredWidth so the selected-value field is wide enough to read option text;
-            // without it the dropdown collapses toward minWidth in a vertical layout and only
-            // the first few characters of long names (pets, clothing, etc.) are visible.
-            UIFactory.SetLayoutElement(obj, 200, 25, 9999, preferredWidth: 460);
+            UIFactory.SetLayoutElement(obj, 460, 32, 0, 0);
 
             var keybinder = dropdown.gameObject.AddComponent<DropdownKeybinder>();
             keybinder.dropdown = dropdown;
