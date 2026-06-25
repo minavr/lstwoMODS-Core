@@ -24,6 +24,11 @@ namespace lstwoMODS_Core.UI.TabMenus
         {
             base.ConstructUI(root);
 
+            // Search box to filter this tab's mods by name (case-insensitive). The per-hack containers
+            // are named after hack.Name, so we just toggle their active state on the query.
+            var searchField = new HacksUIHelper(root).CreateInputField(" Search mods...", "lstwo.HacksTab.Search");
+            var entries = new List<GameObject>();
+
             var b = true;
 
             foreach (var hack in Hacks)
@@ -38,6 +43,7 @@ namespace lstwoMODS_Core.UI.TabMenus
 
                     var fullHackRoot = UIFactory.CreateVerticalGroup(root, hack.Name, false, false, true, true, bgColor: bgColor);
                     UIFactory.SetLayoutElement(fullHackRoot);
+                    entries.Add(fullHackRoot);
 
                     var hackBtn = UIFactory.CreateButton(fullHackRoot, hack.Name + " Button", hack.Name, bgColor);
                     //hackBtn.ButtonText.font = HacksUIHelper.Font;
@@ -70,6 +76,21 @@ namespace lstwoMODS_Core.UI.TabMenus
                     Plugin.LogSource.LogError(e);
                 }
             }
+
+            searchField.OnValueChanged += (query) =>
+            {
+                var q = (query ?? "").Trim();
+
+                foreach (var entry in entries)
+                {
+                    if (entry == null)
+                    {
+                        continue;
+                    }
+
+                    entry.SetActive(q.Length == 0 || entry.name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0);
+                }
+            };
         }
 
         public override void RefreshUI()
